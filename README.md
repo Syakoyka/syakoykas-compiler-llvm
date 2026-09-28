@@ -67,7 +67,7 @@
 
 Синтаксис языка описывается контекстно-свободной грамматикой в форме EBNF:
 
-
+```ebnf
 Program        ::= Statement*
 Statement      ::= VarDeclStmt | IfStmt | WhileStmt | ExprStmt ";"
 VarDeclStmt    ::= "var" IDENTIFIER "=" Expression ";"
@@ -78,24 +78,3 @@ Expression     ::= Term ( ( "+" | "-" ) Term )*
 Term           ::= Factor ( ( "*" | "/" ) Factor )*
 Factor         ::= NUMBER | IDENTIFIER | CallExpr | "(" Expression ")"
 CallExpr       ::= IDENTIFIER "(" ( Expression ( "," Expression )* )? ")"
-
-### 5. Пример исходного кода(.dsl)
-// Инициализация переменных
-var x = 0;
-var limit = 5;
-
-/* 
-   Демонстрация цикла while 
-   и условного оператора if
-*/
-while (x < limit) {
-    if (x != 3) {
-        print(x);
-    }
-    x = x + 1;
-}
-
-### 6. Стек технологий 
-Язык программирования: C++17 (MSVC / GCC / Clang)
-Генерация кода: LLVM API (llvm::IRBuilder, llvm::Module, llvm::LLVMContext)
-Система сборки: CMake 3.16+
