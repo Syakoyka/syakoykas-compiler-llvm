@@ -7,6 +7,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB SOURCES "src/*.cpp")
 
-add_executable(dsl_compiler main.cpp ${SOURCES})
+add_executable(dsl_compiler ${SOURCES})
