@@ -71,6 +71,7 @@ int Lexer::getPrefixLengthFrom(const std::string& s, int startPos, TokenType& ou
     else if (lastValidState == STATE_IDENTIFIER) outType = TokenType::TOKEN_IDENTIFIER;
     else if (lastValidState == STATE_STRING) outType = TokenType::TOKEN_STRING;
     else if (lastValidState == STATE_PUNCT) outType = TokenType::TOKEN_PUNCTUATION;
+    else if (lastValidState == STATE_OP) outType = TokenType::TOKEN_OPERATOR;
     else if (lastValidState == STATE_COMMENT_LINE) outType = TokenType::TOKEN_ERROR;
     else outType = TokenType::TOKEN_ERROR;
 
@@ -129,6 +130,8 @@ std::vector<Token> Lexer::tokenize(const std::string& s) {
                 token.type = TokenType::TOKEN_STRING;
             } else if (detectedType == TokenType::TOKEN_PUNCTUATION) {
                 token.type = TokenType::TOKEN_PUNCTUATION;
+            } else if (detectedType == TokenType::TOKEN_OPERATOR) {
+                token.type = TokenType::TOKEN_OPERATOR;
             } else {
                 token.type = classifyWord(lexeme);
             }
@@ -148,6 +151,14 @@ std::vector<Token> Lexer::tokenize(const std::string& s) {
             column++;
         }
     }
+
+    Token eofToken;
+    eofToken.type = TokenType::TOKEN_EOF;
+    eofToken.value = "";
+    eofToken.position = s.length();
+    eofToken.line = line;
+    eofToken.column = column;
+    tokens.push_back(eofToken);
 
     return tokens;
 }

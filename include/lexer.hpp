@@ -49,27 +49,30 @@ private:
         STATE_NUMBER = 3,
         STATE_STRING = 4,
         STATE_COMMENT_LINE = 5,
-        STATE_PUNCT = 6
+        STATE_PUNCT = 6,
+        STATE_OP = 7
     };
 
     static CharType getCharType(char c);
     static TokenType classifyWord(const std::string& word);
     static int getPrefixLengthFrom(const std::string& s, int startPos, TokenType& outType);
 
-    static constexpr int Transitions[7][9] = {
+    static constexpr int Transitions[8][9] = {
         // LTR  DIG  OP   WS   QUO  SLI  PNC  NL   INV
         {   0,   0,   0,   0,   0,   0,   0,   0,    0 },  // 0: ERROR
-        {   2,   3,   0,   1,   4,   5,   6,   1,    0 },  // 1: START
+        {   2,   3,   7,   1,   4,   5,   6,   1,    0 },  // 1: START
         {   2,   2,   0,   0,   0,   0,   0,   0,    0 },  // 2: IDENTIFIER
         {   0,   3,   0,   0,   0,   0,   0,   0,    0 },  // 3: NUMBER
-        {   4,   4,   4,   4,  -1,   4,   4,   4,    0 },  // 4: STRING (ожидание закрывающей кавычки)
-        {   5,   5,   5,   5,   5,   5,   5,  -1,    5 },  // 5: LINE_COMMENT (до конца строки)
-        {   0,   0,   0,   0,   0,   0,   0,   0,    0 }   // 6: PUNCTUATION
+        {   4,   4,   4,   4,  -1,   4,   4,   4,    0 },  // 4: STRING
+        {   5,   5,   5,   5,   5,   5,   5,  -1,    5 },  // 5: LINE_COMMENT
+        {   0,   0,   0,   0,   0,   0,   0,   0,    0 },  // 6: PUNCTUATION
+        {   0,   0,   7,   0,   0,   0,   0,   0,    0 }   // 7: OPERATOR
     };
 
-    static constexpr bool IsFinalState[7] = {
+    static constexpr bool IsFinalState[8] = {
         false,
         false,
+        true,
         true,
         true,
         true,
