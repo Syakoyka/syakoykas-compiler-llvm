@@ -19,7 +19,9 @@ TokenType Lexer::classifyWord(const std::string& word) {
     static const std::unordered_map<std::string, TokenType> keywords = {
         {"def", TokenType::TOKEN_DEF},
         {"if", TokenType::TOKEN_IF},
-        {"else", TokenType::TOKEN_ELSE}
+        {"else", TokenType::TOKEN_ELSE},
+        {"let", TokenType::TOKEN_LET},
+        {"return", TokenType::TOKEN_RETURN}
     };
 
     auto it = keywords.find(word);

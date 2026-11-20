@@ -9,6 +9,8 @@ enum class TokenType {
     TOKEN_DEF,        
     TOKEN_IF,         
     TOKEN_ELSE,       
+    TOKEN_LET,        
+    TOKEN_RETURN,     
     TOKEN_IDENTIFIER, 
     TOKEN_NUMBER,    
     TOKEN_OPERATOR,
@@ -62,18 +64,17 @@ private:
     static int getPrefixLengthFrom(const std::string& s, int startPos, TokenType& outType);
 
     static constexpr int Transitions[11][10] = {
-        // LTR DIG OP  WS  QUO SLI PNC NL  DOT INV
-        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // 0: ERROR
-        {   2,  3,  7,  1,  4,  5,  6,  1,  6,  0 }, // 1: START
-        {   2,  2,  0,  0,  0,  0,  0,  0,  0,  0 }, // 2: IDENTIFIER
-        {   0,  3,  0,  0,  0,  0,  0,  0,  9,  0 }, // 3: NUMBER
-        {   4,  4,  4,  4,  8,  4,  4,  4,  4,  0 }, // 4: STRING
-        {   5,  5,  5,  5,  5,  5,  5,  0,  5,  5 }, // 5: LINE_COMMENT
-        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // 6: PUNCTUATION
-        {   0,  0,  7,  0,  0,  0,  0,  0,  0,  0 }, // 7: OPERATOR
-        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // 8: STRING_END
-        {   0, 10,  0,  0,  0,  0,  0,  0,  0,  0 }, // 9: FLOAT_DOT
-        {   0, 10,  0,  0,  0,  0,  0,  0,  0,  0 }  // 10: FLOAT
+        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+        {   2,  3,  7,  1,  4,  5,  6,  1,  6,  0 },
+        {   2,  2,  0,  0,  0,  0,  0,  0,  0,  0 },
+        {   0,  3,  0,  0,  0,  0,  0,  0,  9,  0 },
+        {   4,  4,  4,  4,  8,  4,  4,  4,  4,  0 },
+        {   5,  5,  5,  5,  5,  5,  5,  0,  5,  5 },
+        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+        {   0,  0,  7,  0,  0,  0,  0,  0,  0,  0 },
+        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+        {   0, 10,  0,  0,  0,  0,  0,  0,  0,  0 },
+        {   0, 10,  0,  0,  0,  0,  0,  0,  0,  0 }
     };
 
     static constexpr bool IsFinalState[11] = {
