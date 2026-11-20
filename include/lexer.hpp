@@ -39,7 +39,8 @@ private:
         CHAR_SLASH = 5,
         CHAR_PUNCT = 6,
         CHAR_NEWLINE = 7,
-        CHAR_INVALID = 8      
+        CHAR_DOT = 8,
+        CHAR_INVALID = 9      
     };
 
     enum State {
@@ -50,33 +51,42 @@ private:
         STATE_STRING = 4,
         STATE_COMMENT_LINE = 5,
         STATE_PUNCT = 6,
-        STATE_OP = 7
+        STATE_OP = 7,
+        STATE_STRING_END = 8,
+        STATE_FLOAT_DOT = 9,
+        STATE_FLOAT = 10
     };
 
     static CharType getCharType(char c);
     static TokenType classifyWord(const std::string& word);
     static int getPrefixLengthFrom(const std::string& s, int startPos, TokenType& outType);
 
-    static constexpr int Transitions[8][9] = {
-        // LTR  DIG  OP   WS   QUO  SLI  PNC  NL   INV
-        {   0,   0,   0,   0,   0,   0,   0,   0,    0 },  // 0: ERROR
-        {   2,   3,   7,   1,   4,   5,   6,   1,    0 },  // 1: START
-        {   2,   2,   0,   0,   0,   0,   0,   0,    0 },  // 2: IDENTIFIER
-        {   0,   3,   0,   0,   0,   0,   0,   0,    0 },  // 3: NUMBER
-        {   4,   4,   4,   4,  -1,   4,   4,   4,    0 },  // 4: STRING
-        {   5,   5,   5,   5,   5,   5,   5,  -1,    5 },  // 5: LINE_COMMENT
-        {   0,   0,   0,   0,   0,   0,   0,   0,    0 },  // 6: PUNCTUATION
-        {   0,   0,   7,   0,   0,   0,   0,   0,    0 }   // 7: OPERATOR
+    static constexpr int Transitions[11][10] = {
+        // LTR DIG OP  WS  QUO SLI PNC NL  DOT INV
+        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // 0: ERROR
+        {   2,  3,  7,  1,  4,  5,  6,  1,  6,  0 }, // 1: START
+        {   2,  2,  0,  0,  0,  0,  0,  0,  0,  0 }, // 2: IDENTIFIER
+        {   0,  3,  0,  0,  0,  0,  0,  0,  9,  0 }, // 3: NUMBER
+        {   4,  4,  4,  4,  8,  4,  4,  4,  4,  0 }, // 4: STRING
+        {   5,  5,  5,  5,  5,  5,  5,  0,  5,  5 }, // 5: LINE_COMMENT
+        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // 6: PUNCTUATION
+        {   0,  0,  7,  0,  0,  0,  0,  0,  0,  0 }, // 7: OPERATOR
+        {   0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // 8: STRING_END
+        {   0, 10,  0,  0,  0,  0,  0,  0,  0,  0 }, // 9: FLOAT_DOT
+        {   0, 10,  0,  0,  0,  0,  0,  0,  0,  0 }  // 10: FLOAT
     };
 
-    static constexpr bool IsFinalState[8] = {
+    static constexpr bool IsFinalState[11] = {
         false,
         false,
         true,
         true,
+        false,
         true,
         true,
         true,
+        true,
+        false,
         true
     };
 };

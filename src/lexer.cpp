@@ -8,6 +8,7 @@ Lexer::CharType Lexer::getCharType(char c) {
     if (c == '+' || c == '-' || c == '*' || c == '=' || c == '<' || c == '>' || c == '!') return CharType::CHAR_OP;
     if (c == '"') return CharType::CHAR_QUOTE;
     if (c == '/') return CharType::CHAR_SLASH;
+    if (c == '.') return CharType::CHAR_DOT;
     if (c == '(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']' || c == ',' || c == ';') return CharType::CHAR_PUNCT;
     if (c == '\n') return CharType::CHAR_NEWLINE;
     if (std::isspace(c)) return CharType::CHAR_WHITESPACE;
@@ -51,25 +52,21 @@ int Lexer::getPrefixLengthFrom(const std::string& s, int startPos, TokenType& ou
         if (nextState == State::STATE_ERROR) {
             break;
         }
-        
+
         state = nextState;
-        
-        if (state == State::STATE_STRING && s[i] == '"' && i > startPos) {
-            lastValidLength = (i - startPos) + 1;
-            lastValidState = state;
-            state = State::STATE_START;
-            break;
-        }
 
         if (IsFinalState[state]) {
             lastValidLength = (i - startPos) + 1;
             lastValidState = state;
+            if (state == STATE_STRING_END) {
+                break;
+            }
         }
     }
 
-    if (lastValidState == STATE_NUMBER) outType = TokenType::TOKEN_NUMBER;
+    if (lastValidState == STATE_NUMBER || lastValidState == STATE_FLOAT) outType = TokenType::TOKEN_NUMBER;
     else if (lastValidState == STATE_IDENTIFIER) outType = TokenType::TOKEN_IDENTIFIER;
-    else if (lastValidState == STATE_STRING) outType = TokenType::TOKEN_STRING;
+    else if (lastValidState == STATE_STRING_END) outType = TokenType::TOKEN_STRING;
     else if (lastValidState == STATE_PUNCT) outType = TokenType::TOKEN_PUNCTUATION;
     else if (lastValidState == STATE_OP) outType = TokenType::TOKEN_OPERATOR;
     else if (lastValidState == STATE_COMMENT_LINE) outType = TokenType::TOKEN_ERROR;
@@ -84,7 +81,7 @@ std::vector<Token> Lexer::tokenize(const std::string& s) {
     int line = 1;
     int column = 1;
 
-    while (i < s.length()) {
+    while (i < static_cast<int>(s.length())) {
         char c = s[i];
 
         if (c == '\n') {
@@ -99,8 +96,8 @@ std::vector<Token> Lexer::tokenize(const std::string& s) {
             continue;
         }
 
-        if (c == '/' && i + 1 < s.length() && s[i + 1] == '/') {
-            while (i < s.length() && s[i] != '\n') {
+        if (c == '/' && i + 1 < static_cast<int>(s.length()) && s[i + 1] == '/') {
+            while (i < static_cast<int>(s.length()) && s[i] != '\n') {
                 i++;
             }
             continue;
@@ -111,7 +108,7 @@ std::vector<Token> Lexer::tokenize(const std::string& s) {
 
         if (matchLen > 0) {
             std::string lexeme = s.substr(i, matchLen);
-            
+
             if (lexeme.rfind("//", 0) == 0) {
                 i += matchLen;
                 column += matchLen;
@@ -155,7 +152,7 @@ std::vector<Token> Lexer::tokenize(const std::string& s) {
     Token eofToken;
     eofToken.type = TokenType::TOKEN_EOF;
     eofToken.value = "";
-    eofToken.position = s.length();
+    eofToken.position = static_cast<int>(s.length());
     eofToken.line = line;
     eofToken.column = column;
     tokens.push_back(eofToken);
